@@ -7,6 +7,7 @@ import { CentreDashboard } from "@/components/centre/CentreDashboard";
 import { AdminDashboard } from "@/components/admin/AdminDashboard";
 import { GateGuardApp } from "@/components/guard/GateGuardApp";
 import { QualityLabApp } from "@/components/quality/QualityLabApp";
+import { PublicDisplayApp } from "@/components/public/PublicDisplayApp";
 
 export default function Home() {
   useEffect(() => {
@@ -26,6 +27,8 @@ export default function Home() {
       return <GateGuardApp />;
     case "QualityLab":
       return <QualityLabApp />;
+    case "PublicDisplay":
+      return <PublicDisplayApp />;
     default:
       return <div>Select a role</div>;
   }

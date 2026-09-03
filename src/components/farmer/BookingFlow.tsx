@@ -33,9 +33,9 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
 
   const crops: Crop[] = ["Paddy", "Wheat", "Maize", "Chana", "Mustard", "Cotton", "Potato", "Onion"];
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!selectedCrop || !selectedCentre || !selectedSlot || !estimatedQuantity || !farmer) return;
-    const booking = bookSlot({
+    const booking = await bookSlot({
       farmerId: farmer.id,
       centreId: selectedCentre,
       crop: selectedCrop,
@@ -43,7 +43,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
       timeSlot: selectedSlot,
       estimatedQuantity: estimatedQuantity as number
     });
-    generateToken(booking.id);
+    await generateToken(booking.id);
     onComplete();
   };
 

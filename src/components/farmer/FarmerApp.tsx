@@ -6,12 +6,13 @@ import { BookingFlow } from "./BookingFlow";
 import { LiveQueue } from "./LiveQueue";
 import { ProcurementJourney } from "./ProcurementJourney";
 import { ProfileSetup } from "./ProfileSetup";
+import { SMSBookingApp } from "./SMSBookingApp";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Globe2 } from "lucide-react";
 import { useAppStore } from "@/store";
 import { Card } from "@/components/ui/card";
 
-type View = "LANGUAGE" | "HOME" | "PROFILE" | "BOOK" | "TOKEN" | "PROCUREMENT" | "VOICE";
+type View = "LANGUAGE" | "HOME" | "PROFILE" | "BOOK" | "TOKEN" | "PROCUREMENT" | "VOICE" | "SMS";
 
 export function FarmerApp() {
   const [currentView, setCurrentView] = useState<View>("LANGUAGE");
@@ -37,6 +38,14 @@ export function FarmerApp() {
     }
   };
 
+  const handleBack = () => {
+    if (currentView === "PROFILE") {
+      setCurrentView("LANGUAGE");
+    } else {
+      setCurrentView("HOME");
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[#f7f9f3] pb-24 mx-auto max-w-md shadow-2xl overflow-hidden relative">
       {currentView !== "HOME" && currentView !== "LANGUAGE" && (
@@ -45,7 +54,7 @@ export function FarmerApp() {
             variant="ghost" 
             size="icon" 
             className="bg-white/50 backdrop-blur rounded-full shadow-sm hover:bg-white"
-            onClick={() => setCurrentView("HOME")}
+            onClick={handleBack}
           >
             <ArrowLeft className="w-5 h-5 text-slate-800" />
           </Button>
@@ -83,7 +92,7 @@ export function FarmerApp() {
           </div>
         )}
         {currentView === "HOME" && <FarmerHome onNavigate={handleNavigate} />}
-        {currentView === "PROFILE" && <ProfileSetup onComplete={() => setCurrentView("BOOK")} />}
+        {currentView === "PROFILE" && <ProfileSetup onComplete={() => setCurrentView("HOME")} />}
         {currentView === "BOOK" && <BookingFlow onComplete={() => setCurrentView("TOKEN")} />}
         {currentView === "TOKEN" && <LiveQueue />}
         {currentView === "PROCUREMENT" && <ProcurementJourney />}
@@ -93,6 +102,7 @@ export function FarmerApp() {
             <p className="text-slate-500 mb-8">Coming soon in Phase 7...</p>
           </div>
         )}
+        {currentView === "SMS" && <SMSBookingApp />}
       </div>
     </div>
   );

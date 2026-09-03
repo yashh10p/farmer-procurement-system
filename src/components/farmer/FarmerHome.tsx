@@ -88,6 +88,19 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
             <p className="text-slate-500 text-sm">{t('voiceDesc')}</p>
           </div>
         </Card>
+
+        <Card 
+          className="flex items-center p-4 rounded-2xl shadow-sm border-slate-200 bg-slate-50 hover:bg-slate-100 transition-colors cursor-pointer"
+          onClick={() => onNavigate("SMS")}
+        >
+          <div className="bg-slate-200 p-4 rounded-full mr-4 text-slate-700">
+            <Ticket size={32} />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-slate-800">SMS Booking Demo</h3>
+            <p className="text-slate-500 text-sm">Book without internet via text message</p>
+          </div>
+        </Card>
       </div>
     </div>
   );

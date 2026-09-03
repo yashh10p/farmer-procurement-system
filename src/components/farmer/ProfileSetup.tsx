@@ -33,7 +33,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
   const farmers = useAppStore((state) => state.farmers);
   const setActiveFarmerId = useAppStore((state) => state.setActiveFarmerId);
 
-  const handleSignup = (e: React.FormEvent) => {
+  const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!name || !signupPhone || !village || !signupPassword) return;
     
@@ -43,7 +43,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
       return;
     }
 
-    const newFarmer = addFarmer({
+    const newFarmer = await addFarmer({
       name,
       phone: signupPhone,
       password: signupPassword,

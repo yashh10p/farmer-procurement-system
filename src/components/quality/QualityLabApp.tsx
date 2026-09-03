@@ -15,6 +15,8 @@ export function QualityLabApp() {
   const [searchedTokenId, setSearchedTokenId] = useState("");
   const [moisture, setMoisture] = useState("");
   const [grade, setGrade] = useState("A");
+  const [grossWeight, setGrossWeight] = useState("");
+  const [tareWeight, setTareWeight] = useState("");
 
   // In a real app we'd fetch this. Here we just find the token in store.
   const activeToken = store.tokens.find(t => t.number.includes(searchedTokenId) && searchedTokenId.length > 2);
@@ -24,24 +26,29 @@ export function QualityLabApp() {
     setSearchedTokenId(tokenIdInput);
   };
 
-  const handleQualitySubmit = () => {
+  const handleQualitySubmit = async () => {
     if (!activeToken) return;
     const m = parseFloat(moisture);
     const acceptable = m <= 17; // Demo threshold
-    store.updateQuality(activeToken.id, m, grade, acceptable);
+    await store.updateQuality(activeToken.id, m, grade, acceptable);
     setTokenIdInput("");
     setSearchedTokenId("");
     setMoisture("");
   };
 
-  const handleWeighmentSubmit = () => {
-    if (!activeToken || !queueEntry) return;
-    const gross = queueEntry.quantity + 4.2; // random tare addition
-    store.updateWeighment(activeToken.id, gross, 4.2, 2369);
-    store.initiatePayment(activeToken.id);
-    store.completePayment(activeToken.id);
+  const handleWeighmentSubmit = async () => {
+    if (!activeToken || !grossWeight || !tareWeight) return;
+    const gross = parseFloat(grossWeight);
+    const tare = parseFloat(tareWeight);
+    if (isNaN(gross) || isNaN(tare) || gross <= tare) return;
+    
+    await store.updateWeighment(activeToken.id, gross, tare, 2369);
+    await store.initiatePayment(activeToken.id);
+    await store.completePayment(activeToken.id);
     setTokenIdInput("");
     setSearchedTokenId("");
+    setGrossWeight("");
+    setTareWeight("");
   };
 
   return (
@@ -159,16 +166,40 @@ export function QualityLabApp() {
               <Badge variant="outline" className="bg-emerald-50 text-emerald-700 border-emerald-200">QC Passed</Badge>
             </div>
             
-            <div className="bg-slate-800 text-white p-6 rounded-xl text-center mb-6">
-              <p className="text-sm text-slate-400 font-medium mb-1">CONNECTED WEIGHBRIDGE 01 🟢</p>
-              <h3 className="text-5xl font-black font-mono">
-                {(queueEntry.quantity + 4.2).toFixed(2)} <span className="text-2xl text-slate-400">q</span>
-              </h3>
-              <p className="text-sm mt-2 text-slate-400">Stable reading</p>
+            <div className="space-y-4 mb-6">
+              <div>
+                <Label className="text-sm font-bold text-slate-700">Gross Weight (Loaded Truck) in quintals</Label>
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  className="h-12 text-lg mt-2 bg-white" 
+                  value={grossWeight}
+                  onChange={(e) => setGrossWeight(e.target.value)}
+                  placeholder="e.g. 54.20"
+                />
+              </div>
+              <div>
+                <Label className="text-sm font-bold text-slate-700">Tare Weight (Empty Truck) in quintals</Label>
+                <Input 
+                  type="number" 
+                  step="0.01" 
+                  className="h-12 text-lg mt-2 bg-white" 
+                  value={tareWeight}
+                  onChange={(e) => setTareWeight(e.target.value)}
+                  placeholder="e.g. 4.20"
+                />
+              </div>
+              {grossWeight && tareWeight && parseFloat(grossWeight) > parseFloat(tareWeight) && (
+                <div className="bg-emerald-50 text-emerald-800 p-4 rounded-xl flex justify-between items-center border border-emerald-200">
+                  <span className="font-medium">Net Weight:</span>
+                  <span className="text-xl font-bold">{(parseFloat(grossWeight) - parseFloat(tareWeight)).toFixed(2)} q</span>
+                </div>
+              )}
             </div>
 
             <Button 
               className="w-full h-14 text-lg bg-blue-600 hover:bg-blue-700"
+              disabled={!grossWeight || !tareWeight || parseFloat(grossWeight) <= parseFloat(tareWeight)}
               onClick={handleWeighmentSubmit}
             >
               <Scale className="w-5 h-5 mr-2" /> Record Weight & Generate Bill

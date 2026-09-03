@@ -1,6 +1,6 @@
 export type Crop = "Paddy" | "Wheat" | "Maize" | "Chana" | "Mustard" | "Cotton" | "Potato" | "Onion";
 
-export type Role = "Farmer" | "CentreManager" | "DistrictOfficer" | "GateGuard" | "QualityLab";
+export type Role = "Farmer" | "CentreManager" | "DistrictOfficer" | "GateGuard" | "QualityLab" | "PublicDisplay";
 
 export type ProcurementStatus = 
   | "BOOKED" 
@@ -60,6 +60,7 @@ export interface Token {
   number: string; // e.g. "WHT-C01-245"
   status: ProcurementStatus;
   checkInTime?: string;
+  counterId?: string;
   quality?: QualityCheck;
   weighment?: Weighment;
   payment?: Payment;

@@ -18,7 +18,7 @@ export function RoleSwitcher() {
   const currentRole = useAppStore((state) => state.currentRole);
   const setCurrentRole = useAppStore((state) => state.setCurrentRole);
 
-  const roles: Role[] = ["Farmer", "CentreManager", "DistrictOfficer", "GateGuard", "QualityLab"];
+  const roles: Role[] = ["Farmer", "CentreManager", "DistrictOfficer", "GateGuard", "QualityLab", "PublicDisplay"];
 
   return (
     <div className="fixed bottom-4 right-4 z-50">

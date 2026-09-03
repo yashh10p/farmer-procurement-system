@@ -44,9 +44,9 @@ export function GateGuardApp() {
   const booking = activeToken ? store.bookings.find(b => b.id === activeToken.bookingId) : null;
   const farmer = booking ? store.farmers.find(f => f.id === booking.farmerId) : null;
 
-  const handleAllowEntry = () => {
+  const handleAllowEntry = async () => {
     if (activeToken) {
-      store.allowEntry(activeToken.id);
+      await store.allowEntry(activeToken.id);
       setTokenId("");
       setScanned(false);
     }
