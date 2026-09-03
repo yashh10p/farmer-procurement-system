@@ -1,3 +1,4 @@
+import { useAppStore } from "@/store";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -17,6 +18,48 @@ const forecastData = [
 ];
 
 export function AdminDashboard() {
+  const store = useAppStore();
+  
+  // District Multiplier scales the local demo data up to represent 24 mandis across the district
+  const districtMultiplier = 24; 
+  
+  const localProcurement = store.tokens.reduce((acc, t) => acc + (t.weighment?.netWeight || 0), 0);
+  const totalProcurement = (localProcurement * districtMultiplier) || 0;
+  
+  const localPayments = store.tokens.reduce((acc, t) => acc + (t.payment?.netAmount || 0), 0);
+  const totalPayments = (localPayments * districtMultiplier) || 0;
+
+  const formatCurrency = (amount: number) => {
+    if (amount === 0) return { value: "0", unit: "" };
+    if (amount >= 10000000) return { value: (amount / 10000000).toFixed(2), unit: "Cr" };
+    if (amount >= 100000) return { value: (amount / 100000).toFixed(2), unit: "L" };
+    return { value: (amount / 1000).toFixed(2), unit: "k" };
+  };
+
+  const paymentDisplay = formatCurrency(totalPayments);
+  
+  const pendingCount = store.queue.filter(q => q.status === "WAITING").length;
+  const highCongestionCount = pendingCount > 5 ? Math.floor(pendingCount / 5) + 3 : (pendingCount > 1 ? 1 : 0);
+  
+  const anomaliesCount = store.tokens.filter(t => t.quality?.isAcceptable === false).length + (totalProcurement > 50000 ? 1 : 0);
+
+  const centreA = store.centres[0];
+  const activeCountersA = centreA?.counters.filter(c => c.status === "ACTIVE").length || 0;
+  const totalCountersA = centreA?.counters.length || 5;
+  
+  let statusBadgeA = "OPTIMAL";
+  let statusColorA = "emerald";
+  let percentA = (pendingCount / 10) * 100;
+  if (percentA > 100) percentA = 100;
+  
+  if (pendingCount > 5) {
+    statusBadgeA = "HIGH";
+    statusColorA = "red";
+  } else if (pendingCount > 2) {
+    statusBadgeA = "MODERATE";
+    statusColorA = "amber";
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 p-8">
       <header className="mb-8">
@@ -28,19 +71,19 @@ export function AdminDashboard() {
       <div className="grid grid-cols-4 gap-4 mb-8">
         <Card className="p-4 bg-white border-0 shadow-sm rounded-xl">
           <p className="text-sm font-medium text-slate-500">Total Procurement (Today)</p>
-          <h3 className="text-3xl font-black text-slate-800 mt-1">18,420 <span className="text-lg text-slate-400 font-normal">q</span></h3>
+          <h3 className="text-3xl font-black text-slate-800 mt-1">{totalProcurement.toLocaleString(undefined, { maximumFractionDigits: 1 })} <span className="text-lg text-slate-400 font-normal">q</span></h3>
         </Card>
         <Card className="p-4 bg-white border-0 shadow-sm rounded-xl">
           <p className="text-sm font-medium text-slate-500">Payments Disbursed</p>
-          <h3 className="text-3xl font-black text-slate-800 mt-1">₹4.82 <span className="text-lg text-slate-400 font-normal">Cr</span></h3>
+          <h3 className="text-3xl font-black text-slate-800 mt-1">₹{paymentDisplay.value} <span className="text-lg text-slate-400 font-normal">{paymentDisplay.unit}</span></h3>
         </Card>
         <Card className="p-4 bg-white border-0 shadow-sm rounded-xl border-l-4 border-l-amber-500">
           <p className="text-sm font-medium text-slate-500">High Congestion Centres</p>
-          <h3 className="text-3xl font-black text-slate-800 mt-1">4 <span className="text-lg text-slate-400 font-normal">/ 24</span></h3>
+          <h3 className="text-3xl font-black text-slate-800 mt-1">{highCongestionCount} <span className="text-lg text-slate-400 font-normal">/ 24</span></h3>
         </Card>
         <Card className="p-4 bg-white border-0 shadow-sm rounded-xl border-l-4 border-l-red-500">
           <p className="text-sm font-medium text-slate-500">Active Anomalies</p>
-          <h3 className="text-3xl font-black text-slate-800 mt-1">2</h3>
+          <h3 className="text-3xl font-black text-slate-800 mt-1">{anomaliesCount}</h3>
         </Card>
       </div>
 
@@ -100,12 +143,12 @@ export function AdminDashboard() {
               <div className="border rounded-xl p-4">
                 <div className="flex justify-between items-start mb-2">
                   <h4 className="font-bold text-slate-800 flex items-center gap-2">
-                    <Building2 className="w-4 h-4 text-slate-400" /> Centre A (Khed)
+                    <Building2 className="w-4 h-4 text-slate-400" /> {centreA?.name || 'Centre A'} (Local)
                   </h4>
-                  <Badge className="bg-amber-100 text-amber-800 border-0 hover:bg-amber-100">MODERATE</Badge>
+                  <Badge className={`bg-${statusColorA}-100 text-${statusColorA}-800 border-0 hover:bg-${statusColorA}-100`}>{statusBadgeA}</Badge>
                 </div>
-                <p className="text-sm text-slate-500 mb-2">Queue: 42 • Active: 4/5</p>
-                <div className="w-full bg-slate-100 rounded-full h-1.5"><div className="bg-amber-500 h-1.5 rounded-full w-[70%]"></div></div>
+                <p className="text-sm text-slate-500 mb-2">Queue: {pendingCount} • Active: {activeCountersA}/{totalCountersA}</p>
+                <div className="w-full bg-slate-100 rounded-full h-1.5"><div className={`bg-${statusColorA}-500 h-1.5 rounded-full`} style={{ width: `${percentA}%` }}></div></div>
               </div>
               
               <div className="border rounded-xl p-4">

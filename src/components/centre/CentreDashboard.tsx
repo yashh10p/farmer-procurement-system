@@ -11,7 +11,7 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { Users, Clock, PackageCheck, AlertCircle, Play, Pause, ChevronRight } from "lucide-react";
+import { Users, Clock, PackageCheck, AlertCircle, Play, Pause, ChevronRight, Sparkles } from "lucide-react";
 
 export function CentreDashboard() {
   const store = useAppStore();
@@ -23,8 +23,12 @@ export function CentreDashboard() {
   const pendingCount = queue.filter(q => q.status === "WAITING").length;
   const processingCount = queue.filter(q => q.status === "PROCESSING").length;
   
-  const avgServiceTime = (centre.baseProcessingSpeed * (totalCountersCount / activeCountersCount)).toFixed(1);
-  const procuredToday = 1284 + store.tokens.reduce((acc, t) => acc + (t.weighment?.netWeight || 0), 0);
+  const dynamicVariance = pendingCount * 0.15; // Adds a slight fluctuation based on queue congestion
+  const avgServiceTime = (centre.baseProcessingSpeed * (totalCountersCount / activeCountersCount) + dynamicVariance).toFixed(1);
+  const procuredToday = store.tokens.reduce((acc, t) => acc + (t.weighment?.netWeight || 0), 0);
+  
+  const isCongested = pendingCount > 2;
+  const inactiveCounter = centre.counters.find(c => c.status !== "ACTIVE");
   
   const handleToggleCounter = (counterId: string, isActive: boolean) => {
     store.updateCounterStatus(centre.id, counterId, isActive ? "ACTIVE" : "PAUSED");
@@ -183,18 +187,34 @@ export function CentreDashboard() {
             </div>
           </Card>
 
-          <Card className="bg-amber-50 border-2 border-amber-200 shadow-sm rounded-xl p-4">
-            <div className="flex gap-2 items-start text-amber-800 mb-2">
-              <AlertCircle className="w-5 h-5 shrink-0" />
-              <h4 className="font-bold">AI Congestion Alert</h4>
-            </div>
-            <p className="text-sm text-amber-900 mb-3">
-              Expected arrivals jumping by 40% at 14:00. Turn on Counter 5 to maintain &lt;30m ETA.
-            </p>
-            <Button size="sm" className="w-full bg-amber-600 hover:bg-amber-700 text-white">
-              Activate Counter 5
-            </Button>
-          </Card>
+          {isCongested && inactiveCounter ? (
+            <Card className="bg-amber-50 border-2 border-amber-200 shadow-sm rounded-xl p-4">
+              <div className="flex gap-2 items-start text-amber-800 mb-2">
+                <AlertCircle className="w-5 h-5 shrink-0" />
+                <h4 className="font-bold">AI Congestion Alert</h4>
+              </div>
+              <p className="text-sm text-amber-900 mb-3">
+                Wait times are increasing due to high traffic. Turn on {inactiveCounter.name} to maintain &lt;30m ETA.
+              </p>
+              <Button 
+                size="sm" 
+                className="w-full bg-amber-600 hover:bg-amber-700 text-white"
+                onClick={() => handleToggleCounter(inactiveCounter.id, true)}
+              >
+                Activate {inactiveCounter.name}
+              </Button>
+            </Card>
+          ) : (
+            <Card className="bg-emerald-50 border-2 border-emerald-200 shadow-sm rounded-xl p-4">
+              <div className="flex gap-2 items-start text-emerald-800 mb-2">
+                <Sparkles className="w-5 h-5 shrink-0" />
+                <h4 className="font-bold">AI Status: Optimal</h4>
+              </div>
+              <p className="text-sm text-emerald-900">
+                Queue is processing smoothly. Active capacity is sufficient for current traffic.
+              </p>
+            </Card>
+          )}
         </div>
       </div>
     </div>

@@ -88,7 +88,15 @@ export function GateGuardApp() {
         {!scanned ? (
           <Card className="p-8 bg-white/90 backdrop-blur border-0 shadow-xl rounded-2xl text-center animate-in fade-in zoom-in-95 duration-300">
             <div className="w-48 h-48 border-4 border-dashed border-slate-200 rounded-2xl mx-auto mb-6 flex flex-col items-center justify-center text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all"
-                 onClick={() => { setScanned(true); }}>
+                 onClick={() => { 
+                   // Mock scanning by finding the latest booked token for demo purposes
+                   const bookedTokens = store.tokens.filter(t => t.status === "BOOKED");
+                   const latestToken = bookedTokens[bookedTokens.length - 1];
+                   if (latestToken && !tokenId) {
+                     setTokenId(latestToken.number);
+                   }
+                   setScanned(true); 
+                 }}>
               <QrCode className="w-16 h-16 mb-2" />
               <p className="font-bold">Tap to Scan QR</p>
             </div>

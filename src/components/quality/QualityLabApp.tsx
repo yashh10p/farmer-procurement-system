@@ -10,6 +10,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 
 export function QualityLabApp() {
   const store = useAppStore();
+  const [activeStation, setActiveStation] = useState<"QUALITY" | "WEIGHBRIDGE">("QUALITY");
   const [tokenIdInput, setTokenIdInput] = useState("");
   const [searchedTokenId, setSearchedTokenId] = useState("");
   const [moisture, setMoisture] = useState("");
@@ -48,13 +49,30 @@ export function QualityLabApp() {
       <div className="w-full max-w-2xl">
         <header className="mb-8 flex items-center gap-3">
           <div className="bg-blue-600 text-white p-3 rounded-xl shadow">
-            <FlaskConical className="w-8 h-8" />
+            {activeStation === "QUALITY" ? <FlaskConical className="w-8 h-8" /> : <Scale className="w-8 h-8" />}
           </div>
           <div>
-            <h1 className="text-2xl font-bold text-slate-800">Quality & Weighbridge Lab</h1>
+            <h1 className="text-2xl font-bold text-slate-800">
+              {activeStation === "QUALITY" ? "Quality Lab Station" : "Weighbridge Station"}
+            </h1>
             <p className="text-slate-500">Mandi Centre A</p>
           </div>
         </header>
+
+        <div className="flex bg-slate-200/50 p-1 rounded-xl mb-6">
+          <button 
+            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeStation === "QUALITY" ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:bg-slate-200'}`}
+            onClick={() => { setActiveStation("QUALITY"); setSearchedTokenId(""); setTokenIdInput(""); }}
+          >
+            Quality Testing
+          </button>
+          <button 
+            className={`flex-1 py-3 text-sm font-bold rounded-lg transition-all ${activeStation === "WEIGHBRIDGE" ? 'bg-white shadow-sm text-blue-600' : 'text-slate-500 hover:bg-slate-200'}`}
+            onClick={() => { setActiveStation("WEIGHBRIDGE"); setSearchedTokenId(""); setTokenIdInput(""); }}
+          >
+            Weighbridge
+          </button>
+        </div>
 
         <Card className="p-6 bg-white/90 backdrop-blur border-0 shadow-lg rounded-xl mb-6 animate-in fade-in slide-in-from-top-4 duration-300">
           <Label htmlFor="token" className="text-sm font-bold text-slate-700">Scan or Enter Token Number</Label>
@@ -74,7 +92,8 @@ export function QualityLabApp() {
           </div>
         </Card>
 
-        {activeToken && queueEntry && activeToken.status === "READY_FOR_QC" && (
+        {/* QUALITY STATION VIEW */}
+        {activeStation === "QUALITY" && activeToken && queueEntry && activeToken.status === "READY_FOR_QC" && (
           <Card className="p-6 bg-white/95 backdrop-blur border-0 shadow-xl rounded-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
             <div className="flex justify-between items-start mb-6 border-b pb-4">
               <div>
@@ -129,7 +148,8 @@ export function QualityLabApp() {
           </Card>
         )}
 
-        {activeToken && queueEntry && activeToken.status === "QUALITY_CHECK" && (
+        {/* WEIGHBRIDGE STATION VIEW */}
+        {activeStation === "WEIGHBRIDGE" && activeToken && queueEntry && activeToken.status === "QUALITY_CHECK" && (
           <Card className="p-6 bg-white/95 backdrop-blur border-0 shadow-xl rounded-xl animate-in fade-in slide-in-from-bottom-4 duration-500">
              <div className="flex justify-between items-start mb-6 border-b pb-4">
               <div>
@@ -156,15 +176,28 @@ export function QualityLabApp() {
           </Card>
         )}
 
-        {activeToken && activeToken.status !== "READY_FOR_QC" && activeToken.status !== "QUALITY_CHECK" && (
+        {activeToken && activeStation === "QUALITY" && activeToken.status !== "READY_FOR_QC" && (
           <Card className="p-8 text-center bg-white/90 backdrop-blur border-0 shadow-lg rounded-xl animate-in zoom-in-95 duration-300">
             <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
-            <h3 className="text-xl font-bold text-slate-800">Token Not Ready</h3>
+            <h3 className="text-xl font-bold text-slate-800">Not Ready for Quality Check</h3>
             <p className="text-slate-500 mt-2">
               Token <span className="font-bold">{activeToken.number}</span> is currently in <Badge variant="outline" className="ml-1 uppercase">{activeToken.status}</Badge> state.
             </p>
             <p className="text-slate-500 mt-2 text-sm">
-              The Centre Manager needs to "Send to Lab" from the queue before this token can proceed to Quality Check.
+              The Centre Manager needs to "Send to Lab" from the queue first.
+            </p>
+          </Card>
+        )}
+
+        {activeToken && activeStation === "WEIGHBRIDGE" && activeToken.status !== "QUALITY_CHECK" && (
+          <Card className="p-8 text-center bg-white/90 backdrop-blur border-0 shadow-lg rounded-xl animate-in zoom-in-95 duration-300">
+            <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-4" />
+            <h3 className="text-xl font-bold text-slate-800">Not Ready for Weighment</h3>
+            <p className="text-slate-500 mt-2">
+              Token <span className="font-bold">{activeToken.number}</span> is currently in <Badge variant="outline" className="ml-1 uppercase">{activeToken.status}</Badge> state.
+            </p>
+            <p className="text-slate-500 mt-2 text-sm">
+              This token must pass Quality Check before weighment.
             </p>
           </Card>
         )}

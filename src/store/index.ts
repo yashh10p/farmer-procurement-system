@@ -5,6 +5,8 @@ import {
 import { supabase } from '../lib/supabase';
 
 interface AppState {
+  language: string | null;
+  setLanguage: (lang: string) => void;
   currentRole: Role;
   setCurrentRole: (role: Role) => void;
   activeFarmerId: string | null;
@@ -50,7 +52,7 @@ const MOCK_FARMERS: Farmer[] = [
 const MOCK_CENTRES: ProcurementCentre[] = [
   {
     id: "c1",
-    name: "Mandi Centre A",
+    name: "Mandi Centre A (Khed)",
     location: "Pune District",
     distance: "12 km",
     baseProcessingSpeed: 8.4,
@@ -61,38 +63,66 @@ const MOCK_CENTRES: ProcurementCentre[] = [
       { id: "cnt4", name: "Counter 4", status: "ACTIVE" },
       { id: "cnt5", name: "Counter 5", status: "OFFLINE" },
     ]
+  },
+  {
+    id: "c2",
+    name: "Mandi Centre B (Shirur)",
+    location: "Pune District",
+    distance: "25 km",
+    baseProcessingSpeed: 9.2,
+    counters: [
+      { id: "cnt1", name: "Counter 1", status: "ACTIVE" },
+      { id: "cnt2", name: "Counter 2", status: "ACTIVE" },
+      { id: "cnt3", name: "Counter 3", status: "OFFLINE" },
+    ]
+  },
+  {
+    id: "c3",
+    name: "Mandi Centre C (Baramati)",
+    location: "Pune District",
+    distance: "40 km",
+    baseProcessingSpeed: 7.5,
+    counters: [
+      { id: "cnt1", name: "Counter 1", status: "ACTIVE" },
+      { id: "cnt2", name: "Counter 2", status: "ACTIVE" },
+    ]
   }
 ];
 
 // Initial Queue Setup
-const MOCK_QUEUE: QueueEntry[] = [
-  { tokenId: "WHT-C01-238", farmerName: "Farmer A", crop: "Wheat", quantity: 42, joinedAt: new Date(Date.now() - 1000*60*20).toISOString(), estimatedWaitTime: 0, position: 0, status: "PROCESSING", assignedCounterId: "cnt1" },
-  { tokenId: "WHT-C01-239", farmerName: "Farmer B", crop: "Wheat", quantity: 35, joinedAt: new Date(Date.now() - 1000*60*15).toISOString(), estimatedWaitTime: 4, position: 1, status: "WAITING" },
-  { tokenId: "WHT-C01-240", farmerName: "Farmer C", crop: "Paddy", quantity: 50, joinedAt: new Date(Date.now() - 1000*60*10).toISOString(), estimatedWaitTime: 12, position: 2, status: "WAITING" },
-];
+const MOCK_QUEUE: QueueEntry[] = [];
 
-const channel = supabase.channel('mandi-room');
+// Use API polling for cross-device local synchronization
+let syncInterval: any = null;
 
 export const useAppStore = create<AppState>((set, get) => {
 
   const setAndSync = (partial: any) => {
-    set((state) => {
-      const nextState = typeof partial === 'function' ? partial(state) : partial;
-      
-      // If Supabase key is configured, broadcast the patch to other devices
-      if (supabase.supabaseKey !== 'REPLACE_ME_ANON_KEY') {
-        channel.send({
-          type: 'broadcast',
-          event: 'STATE_PATCH',
-          payload: nextState
-        }).catch(err => console.error("Broadcast failed:", err));
-      }
-      
-      return nextState;
-    });
+    set(partial);
+    
+    // Get the fully merged state after the update
+    const fullState = get();
+    
+    // Push full state to API for cross-device sync
+    if (typeof window !== 'undefined') {
+      fetch('/api/sync', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          farmers: fullState.farmers,
+          centres: fullState.centres,
+          bookings: fullState.bookings,
+          tokens: fullState.tokens,
+          queue: fullState.queue,
+          auditLogs: fullState.auditLogs,
+        })
+      }).catch(err => console.error("Sync failed:", err));
+    }
   };
 
   return {
+    language: null,
+    setLanguage: (lang) => set({ language: lang }),
     currentRole: "Farmer",
     setCurrentRole: (role) => set({ currentRole: role }),
     activeFarmerId: null,
@@ -106,45 +136,30 @@ export const useAppStore = create<AppState>((set, get) => {
     auditLogs: [],
 
     initSync: () => {
-      if (supabase.supabaseKey === 'REPLACE_ME_ANON_KEY') {
-        console.warn("Supabase not configured. Using local state. Please update src/lib/supabase.ts");
-        return;
-      }
+      if (typeof window === 'undefined') return;
       
-      // Prevent double subscription (e.g. from React Strict Mode)
-      if ((window as any)._supabaseSyncInitialized) return;
-      (window as any)._supabaseSyncInitialized = true;
+      // Prevent double subscription
+      if ((window as any)._syncInitialized) return;
+      (window as any)._syncInitialized = true;
       
-      // Listen for patches from other devices
-      channel.on('broadcast', { event: 'STATE_PATCH' }, ({ payload }) => {
-        set(payload); // Apply silently without rebroadcasting
-      });
-      
-      // If a new device joins and asks for the state, send them our current state
-      channel.on('broadcast', { event: 'REQUEST_STATE' }, () => {
-        channel.send({
-          type: 'broadcast',
-          event: 'STATE_PATCH',
-          payload: {
-            farmers: get().farmers,
-            centres: get().centres,
-            bookings: get().bookings,
-            tokens: get().tokens,
-            queue: get().queue,
-            auditLogs: get().auditLogs,
+      const fetchState = async () => {
+        try {
+          const res = await fetch(`/api/sync?t=${Date.now()}`, { cache: 'no-store' });
+          const data = await res.json();
+          if (data && data.tokens) {
+            set(data);
           }
-        }).catch(err => console.error("REQUEST_STATE reply failed:", err));
-      });
-      
-      // Subscribe to the channel
-      channel.subscribe((status, err) => {
-        console.log("Supabase Realtime status:", status, err || "");
-        if (status === 'SUBSCRIBED') {
-          console.log("Connected to Supabase Realtime! Requesting state from peers...");
-          channel.send({ type: 'broadcast', event: 'REQUEST_STATE', payload: {} })
-            .catch(e => console.error("Initial REQUEST_STATE failed:", e));
+        } catch (err) {
+          console.error("Failed to fetch sync state:", err);
         }
-      });
+      };
+
+      // Initial fetch
+      fetchState();
+
+      // Poll every 2 seconds for updates
+      syncInterval = setInterval(fetchState, 2000);
+      console.log("Connected to API Sync! Polling for cross-device updates...");
     },
 
     addFarmer: (farmerData) => {

@@ -6,12 +6,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserPlus, ChevronRight, LogIn, Lock, Phone } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { useTranslation } from "@/lib/translations";
 
 interface ProfileSetupProps {
   onComplete: () => void;
 }
 
 export function ProfileSetup({ onComplete }: ProfileSetupProps) {
+  const language = useAppStore((state) => state.language);
+  const t = useTranslation(language);
+  
   const [activeTab, setActiveTab] = useState("login");
   const [errorMsg, setErrorMsg] = useState("");
 
@@ -74,8 +78,8 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
   return (
     <div className="flex flex-col h-full bg-slate-50">
       <header className="bg-emerald-700 text-white p-6 pb-8 pt-16 shadow-md">
-        <h2 className="text-2xl font-bold">Authentication</h2>
-        <p className="text-emerald-100 text-sm opacity-90">Login or create your profile</p>
+        <h2 className="text-2xl font-bold">{t('profileTitle')}</h2>
+        <p className="text-emerald-100 text-sm opacity-90">{t('profileSubtitle')}</p>
       </header>
 
       <div className="flex-1 p-4 -mt-4 overflow-y-auto pb-24">
@@ -84,10 +88,10 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
           <Tabs defaultValue="login" onValueChange={setActiveTab} className="w-full">
             <TabsList className="grid w-full grid-cols-2 mb-6 bg-slate-100 p-1 rounded-xl">
               <TabsTrigger value="login" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm py-2">
-                Log In
+                {t('loginTab')}
               </TabsTrigger>
               <TabsTrigger value="signup" className="rounded-lg data-[state=active]:bg-white data-[state=active]:text-emerald-700 data-[state=active]:shadow-sm py-2">
-                Sign Up
+                {t('signupTab')}
               </TabsTrigger>
             </TabsList>
             
@@ -102,11 +106,11 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 <LogIn className="w-8 h-8" />
               </div>
               
-              <h3 className="text-xl font-bold text-slate-800 text-center mb-6">Welcome Back!</h3>
+              <h3 className="text-xl font-bold text-slate-800 text-center mb-6">{t('welcomeBack')}</h3>
               
               <form onSubmit={handleLogin} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="loginPhone" className="text-slate-600">Phone Number</Label>
+                  <Label htmlFor="loginPhone" className="text-slate-600">{t('phone')}</Label>
                   <div className="relative">
                     <Phone className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
                     <Input 
@@ -122,7 +126,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="loginPassword" className="text-slate-600">Password</Label>
+                  <Label htmlFor="loginPassword" className="text-slate-600">{t('password')}</Label>
                   <div className="relative">
                     <Lock className="absolute left-3 top-3.5 h-5 w-5 text-slate-400" />
                     <Input 
@@ -142,7 +146,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                   className="w-full mt-8 h-14 text-lg bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md"
                   disabled={!loginPhone || !loginPassword}
                 >
-                  Log In <ChevronRight className="ml-2 w-5 h-5" />
+                  {t('loginBtn')} <ChevronRight className="ml-2 w-5 h-5" />
                 </Button>
               </form>
             </TabsContent>
@@ -152,11 +156,11 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 <UserPlus className="w-8 h-8" />
               </div>
               
-              <h3 className="text-xl font-bold text-slate-800 text-center mb-6">Create New Profile</h3>
+              <h3 className="text-xl font-bold text-slate-800 text-center mb-6">{t('createNewProfile')}</h3>
               
               <form onSubmit={handleSignup} className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="name" className="text-slate-600">Full Name</Label>
+                  <Label htmlFor="name" className="text-slate-600">{t('fullName')}</Label>
                   <Input 
                     id="name" 
                     placeholder="e.g. Ramesh Patil" 
@@ -168,7 +172,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 </div>
                 
                 <div className="space-y-2">
-                  <Label htmlFor="signupPhone" className="text-slate-600">Phone Number</Label>
+                  <Label htmlFor="signupPhone" className="text-slate-600">{t('phone')}</Label>
                   <Input 
                     id="signupPhone" 
                     type="tel"
@@ -181,7 +185,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="signupPassword" className="text-slate-600">Password</Label>
+                  <Label htmlFor="signupPassword" className="text-slate-600">{t('password')}</Label>
                   <Input 
                     id="signupPassword" 
                     type="password"
@@ -194,7 +198,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="village" className="text-slate-600">Village / Block</Label>
+                  <Label htmlFor="village" className="text-slate-600">{t('village')}</Label>
                   <Input 
                     id="village" 
                     placeholder="e.g. Shirur" 
@@ -210,7 +214,7 @@ export function ProfileSetup({ onComplete }: ProfileSetupProps) {
                   className="w-full mt-8 h-14 text-lg bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md"
                   disabled={!name || !signupPhone || !village || !signupPassword}
                 >
-                  Create Profile <ChevronRight className="ml-2 w-5 h-5" />
+                  {t('register')} <ChevronRight className="ml-2 w-5 h-5" />
                 </Button>
               </form>
             </TabsContent>

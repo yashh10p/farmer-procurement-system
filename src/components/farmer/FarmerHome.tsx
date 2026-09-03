@@ -2,6 +2,7 @@ import { Card } from "@/components/ui/card";
 import { CalendarDays, Ticket, Package, Mic } from "lucide-react";
 
 import { useAppStore } from "@/store";
+import { useTranslation } from "@/lib/translations";
 
 interface FarmerHomeProps {
   onNavigate: (view: "BOOK" | "TOKEN" | "PROCUREMENT" | "VOICE" | "PROFILE") => void;
@@ -9,6 +10,8 @@ interface FarmerHomeProps {
 
 export function FarmerHome({ onNavigate }: FarmerHomeProps) {
   const activeFarmerId = useAppStore((state) => state.activeFarmerId);
+  const language = useAppStore((state) => state.language);
+  const t = useTranslation(language);
   const farmers = useAppStore((state) => state.farmers);
   const activeFarmer = farmers.find(f => f.id === activeFarmerId);
 
@@ -19,18 +22,17 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
         <div className="flex items-center justify-between mb-4">
           <div className="flex items-center gap-2">
             <span className="text-2xl">🌾</span>
-            <h1 className="text-xl font-bold">Smart Procurement</h1>
+            <h1 className="text-xl font-bold">{t('smartProcurement')}</h1>
           </div>
           <button 
             onClick={() => onNavigate("PROFILE")}
             className="text-xs bg-emerald-800 hover:bg-emerald-900 px-3 py-1 rounded-full border border-emerald-600"
           >
-            Switch Profile
+            {t('switchProfile')}
           </button>
         </div>
-        <h2 className="text-4xl font-extrabold mb-1">नमस्कार, {activeFarmer?.name.split(" ")[0] || ""}!</h2>
-        <p className="text-emerald-50 text-lg opacity-90">आप क्या करना चाहते हैं?</p>
-        <p className="text-emerald-100 text-sm">What would you like to do?</p>
+        <h2 className="text-4xl font-extrabold mb-1">{t('greeting')}, {activeFarmer?.name.split(" ")[0] || ""}!</h2>
+        <p className="text-emerald-50 text-lg opacity-90">{t('whatToDo')}</p>
       </header>
 
       {/* Main Actions */}
@@ -43,8 +45,8 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
             <CalendarDays size={32} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">BOOK A SLOT</h3>
-            <p className="text-slate-500 text-sm">Book your procurement date</p>
+            <h3 className="text-xl font-bold text-slate-800">{t('bookSlotTitle')}</h3>
+            <p className="text-slate-500 text-sm">{t('bookSlotDesc')}</p>
           </div>
         </Card>
 
@@ -56,8 +58,8 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
             <Ticket size={32} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">CHECK MY TOKEN</h3>
-            <p className="text-slate-500 text-sm">See your live queue position</p>
+            <h3 className="text-xl font-bold text-slate-800">{t('checkTokenTitle')}</h3>
+            <p className="text-slate-500 text-sm">{t('checkTokenDesc')}</p>
           </div>
         </Card>
 
@@ -69,8 +71,8 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
             <Package size={32} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">MY PROCUREMENT</h3>
-            <p className="text-slate-500 text-sm">Check status & payment</p>
+            <h3 className="text-xl font-bold text-slate-800">{t('myProcurementTitle')}</h3>
+            <p className="text-slate-500 text-sm">{t('myProcurementDesc')}</p>
           </div>
         </Card>
 
@@ -82,8 +84,8 @@ export function FarmerHome({ onNavigate }: FarmerHomeProps) {
             <Mic size={32} />
           </div>
           <div>
-            <h3 className="text-xl font-bold text-slate-800">सुनें / Listen</h3>
-            <p className="text-slate-500 text-sm">Use voice assistance</p>
+            <h3 className="text-xl font-bold text-slate-800">{t('voiceTitle')}</h3>
+            <p className="text-slate-500 text-sm">{t('voiceDesc')}</p>
           </div>
         </Card>
       </div>

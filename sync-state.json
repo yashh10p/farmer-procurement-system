@@ -1,0 +1,252 @@
+{
+  "farmers": [
+    {
+      "id": "f_demo1",
+      "name": "Ramesh Patil",
+      "phone": "9876543210",
+      "password": "password123",
+      "village": "Shirur",
+      "landRegistered": true,
+      "eligibleQuantity": 50
+    },
+    {
+      "name": "Yash Patel",
+      "phone": "7249685828",
+      "password": "yash123",
+      "village": "Savare",
+      "landRegistered": true,
+      "eligibleQuantity": 0,
+      "id": "f1788444201238"
+    }
+  ],
+  "centres": [
+    {
+      "id": "c1",
+      "name": "Mandi Centre A (Khed)",
+      "location": "Pune District",
+      "distance": "12 km",
+      "baseProcessingSpeed": 8.4,
+      "counters": [
+        {
+          "id": "cnt1",
+          "name": "Counter 1",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt2",
+          "name": "Counter 2",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt3",
+          "name": "Counter 3",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt4",
+          "name": "Counter 4",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt5",
+          "name": "Counter 5",
+          "status": "OFFLINE"
+        }
+      ]
+    },
+    {
+      "id": "c2",
+      "name": "Mandi Centre B (Shirur)",
+      "location": "Pune District",
+      "distance": "25 km",
+      "baseProcessingSpeed": 9.2,
+      "counters": [
+        {
+          "id": "cnt1",
+          "name": "Counter 1",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt2",
+          "name": "Counter 2",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt3",
+          "name": "Counter 3",
+          "status": "OFFLINE"
+        }
+      ]
+    },
+    {
+      "id": "c3",
+      "name": "Mandi Centre C (Baramati)",
+      "location": "Pune District",
+      "distance": "40 km",
+      "baseProcessingSpeed": 7.5,
+      "counters": [
+        {
+          "id": "cnt1",
+          "name": "Counter 1",
+          "status": "ACTIVE"
+        },
+        {
+          "id": "cnt2",
+          "name": "Counter 2",
+          "status": "ACTIVE"
+        }
+      ]
+    }
+  ],
+  "bookings": [
+    {
+      "farmerId": "f_demo1",
+      "centreId": "c1",
+      "crop": "Paddy",
+      "date": "2026-09-10",
+      "timeSlot": "11:00 AM – 12:00 PM",
+      "estimatedQuantity": 25,
+      "id": "b1788443685233"
+    },
+    {
+      "farmerId": "f_demo1",
+      "centreId": "c1",
+      "crop": "Paddy",
+      "date": "2026-09-10",
+      "timeSlot": "11:00 AM – 12:00 PM",
+      "estimatedQuantity": 36,
+      "id": "b1788444031455"
+    },
+    {
+      "farmerId": "f1788444201238",
+      "centreId": "c2",
+      "crop": "Onion",
+      "date": "2026-09-10",
+      "timeSlot": "11:00 AM – 12:00 PM",
+      "estimatedQuantity": 35,
+      "id": "b1788444219357"
+    }
+  ],
+  "tokens": [
+    {
+      "id": "t1788443685233",
+      "bookingId": "b1788443685233",
+      "number": "PAD-C01-347",
+      "status": "ARRIVED"
+    },
+    {
+      "id": "t1788444031455",
+      "bookingId": "b1788444031455",
+      "number": "PAD-C01-105",
+      "status": "PAYMENT_COMPLETED",
+      "checkInTime": "2026-09-03T14:00:49.210Z",
+      "quality": {
+        "moisture": 12,
+        "grade": "A",
+        "isAcceptable": true
+      },
+      "weighment": {
+        "grossWeight": 40.2,
+        "tareWeight": 4.2,
+        "netWeight": 36,
+        "mspRate": 2369
+      },
+      "payment": {
+        "grossAmount": 85284,
+        "deductions": [
+          {
+            "reason": "Cleaning charges",
+            "amount": 200
+          }
+        ],
+        "netAmount": 85084,
+        "status": "COMPLETED",
+        "transactionId": "DBT-829509"
+      }
+    },
+    {
+      "id": "t1788444219358",
+      "bookingId": "b1788444219357",
+      "number": "ONI-C01-849",
+      "status": "BOOKED"
+    }
+  ],
+  "queue": [
+    {
+      "tokenId": "t1788444031455",
+      "farmerName": "Ramesh Patil",
+      "crop": "Paddy",
+      "quantity": 36,
+      "joinedAt": "2026-09-03T14:00:49.210Z",
+      "estimatedWaitTime": 0,
+      "position": 0,
+      "status": "PAYMENT_COMPLETED"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log1788443711818",
+      "tokenId": "t1788443685233",
+      "timestamp": "2026-09-03T13:55:11.818Z",
+      "action": "Allowed entry at Gate",
+      "actorRole": "GateGuard",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444046959",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:00:46.959Z",
+      "action": "Allowed entry at Gate",
+      "actorRole": "GateGuard",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444049211",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:00:49.211Z",
+      "action": "Joined the queue",
+      "actorRole": "Farmer",
+      "actorName": "Farmer"
+    },
+    {
+      "id": "log1788444062747",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:01:02.747Z",
+      "action": "Sent to Quality Lab",
+      "actorRole": "CentreManager",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444080274",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:01:20.274Z",
+      "action": "Quality check completed. Moisture: 12%, Grade: A",
+      "actorRole": "QualityLab",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444086225",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:01:26.225Z",
+      "action": "Weighment completed. Net: 36q",
+      "actorRole": "QualityLab",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444086226",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:01:26.226Z",
+      "action": "Payment initiated",
+      "actorRole": "QualityLab",
+      "actorName": "System Operator"
+    },
+    {
+      "id": "log1788444086226",
+      "tokenId": "t1788444031455",
+      "timestamp": "2026-09-03T14:01:26.226Z",
+      "action": "Payment completed successfully",
+      "actorRole": "QualityLab",
+      "actorName": "System Operator"
+    }
+  ]
+}

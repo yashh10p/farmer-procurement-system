@@ -7,12 +7,16 @@ import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { CheckCircle2, Bot, MapPin, Calendar, Clock, ChevronRight } from "lucide-react";
+import { useTranslation } from "@/lib/translations";
 
 interface BookingFlowProps {
   onComplete: () => void;
 }
 
 export function BookingFlow({ onComplete }: BookingFlowProps) {
+  const language = useAppStore((state) => state.language);
+  const t = useTranslation(language);
+  
   const [step, setStep] = useState(1);
   const [selectedCrop, setSelectedCrop] = useState<Crop | null>(null);
   const [estimatedQuantity, setEstimatedQuantity] = useState<number | "">("");
@@ -46,15 +50,15 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
   return (
     <div className="flex flex-col h-full bg-slate-50">
       <header className="bg-emerald-700 text-white p-6 pb-8 pt-16 shadow-md">
-        <h2 className="text-2xl font-bold">Book a Slot</h2>
-        <p className="text-emerald-100 text-sm opacity-90">Step {step} of 5</p>
+        <h2 className="text-2xl font-bold">{t('bookingTitle')}</h2>
+        <p className="text-emerald-100 text-sm opacity-90">{t('step')} {step} {t('of')} 5</p>
       </header>
 
       <div className="flex-1 p-4 -mt-4">
         {step === 1 && (
           <Card className="p-6 rounded-2xl shadow-lg border-0 bg-white/80 backdrop-blur animate-in fade-in slide-in-from-right-4 duration-300">
-            <h3 className="text-xl font-bold text-slate-800 mb-2">Select Crop</h3>
-            <p className="text-slate-500 text-sm mb-6">Which crop are you selling?</p>
+            <h3 className="text-xl font-bold text-slate-800 mb-2">{t('selectCropTitle')}</h3>
+            <p className="text-slate-500 text-sm mb-6">{t('whichCrop')}</p>
             <div className="grid grid-cols-2 gap-3">
               {crops.map((crop) => (
                 <Button
@@ -72,17 +76,17 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
               disabled={!selectedCrop}
               onClick={() => setStep(2)}
             >
-              Continue <ChevronRight className="ml-2 w-5 h-5" />
+              {t('continue')} <ChevronRight className="ml-2 w-5 h-5" />
             </Button>
           </Card>
         )}
 
         {step === 2 && (
           <Card className="p-6 rounded-2xl shadow-lg border-0 bg-white/80 backdrop-blur animate-in fade-in slide-in-from-right-4 duration-300">
-            <h3 className="text-xl font-bold text-slate-800 mb-6">Enter Crop Details</h3>
+            <h3 className="text-xl font-bold text-slate-800 mb-6">{t('enterCropDetails')}</h3>
             
             <div className="space-y-4">
-              <Label className="text-slate-600">Estimated Quantity (Quintals)</Label>
+              <Label className="text-slate-600">{t('estimatedQuantity')}</Label>
               <Input 
                 type="number"
                 placeholder="e.g. 42"
@@ -97,7 +101,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
               disabled={!estimatedQuantity}
               onClick={() => setStep(3)}
             >
-              Find Centres <ChevronRight className="ml-2 w-5 h-5" />
+              {t('findCentres')} <ChevronRight className="ml-2 w-5 h-5" />
             </Button>
           </Card>
         )}
@@ -105,7 +109,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
         {step === 3 && (
           <Card className="p-0 overflow-hidden rounded-2xl shadow-lg border-0 bg-white/80 backdrop-blur animate-in fade-in slide-in-from-right-4 duration-300">
             <div className="p-6 border-b bg-emerald-700 text-white">
-              <h3 className="text-xl font-bold">Select Mandi Centre</h3>
+              <h3 className="text-xl font-bold">{t('selectMandiCentre')}</h3>
             </div>
             <div className="p-4 space-y-3 bg-slate-50">
               {centres.map((c, idx) => (
@@ -125,12 +129,13 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                   </div>
                   {idx === 0 && (
                      <div className="mb-2 inline-flex items-center gap-1 text-xs font-bold text-emerald-700 bg-emerald-200/50 px-2 py-1 rounded">
-                       <Bot className="w-3 h-3" /> AI RECOMMENDED
+                       <Bot className="w-3 h-3" /> {t('aiRecommended')}
                      </div>
                   )}
                   <div className="ml-7 space-y-1">
                     <p className="text-sm text-slate-600 flex items-center gap-2">
-                      <span className="w-2 h-2 rounded-full bg-emerald-500"></span> LOW CONGESTION
+                      <span className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-emerald-500' : idx === 1 ? 'bg-amber-500' : 'bg-red-500'}`}></span> 
+                      {idx === 0 ? t('lowCongestion') : idx === 1 ? 'Moderate Congestion' : 'High Congestion'}
                     </p>
                   </div>
                 </div>
@@ -142,7 +147,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                 disabled={!selectedCentre}
                 onClick={() => setStep(4)}
               >
-                Select Time Slot <ChevronRight className="ml-2 w-5 h-5" />
+                {t('selectTimeSlotBtn')} <ChevronRight className="ml-2 w-5 h-5" />
               </Button>
             </div>
           </Card>
@@ -151,7 +156,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
         {step === 4 && (
           <div className="space-y-4 animate-in fade-in slide-in-from-right-4 duration-300">
             <Card className="p-6 rounded-2xl shadow-lg border-0 bg-white/80 backdrop-blur">
-              <h3 className="text-xl font-bold text-slate-800 mb-6">Select a Time Slot</h3>
+              <h3 className="text-xl font-bold text-slate-800 mb-6">{t('selectTimeSlotTitle')}</h3>
               <div className="space-y-3">
                 {["10:00 AM – 11:00 AM", "11:00 AM – 12:00 PM", "02:00 PM – 03:00 PM"].map((slot, idx) => (
                   <Button 
@@ -165,9 +170,9 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                       {slot}
                     </span>
                     {idx === 0 ? (
-                      <span className={`text-xs px-2 py-1 rounded ${selectedSlot === slot ? 'bg-emerald-500 text-white' : 'bg-emerald-100 text-emerald-800'}`}>Recommended</span>
+                      <span className={`text-xs px-2 py-1 rounded ${selectedSlot === slot ? 'bg-emerald-500 text-white' : 'bg-emerald-100 text-emerald-800'}`}>{t('recommended')}</span>
                     ) : (
-                      <span className={`text-xs px-2 py-1 rounded ${selectedSlot === slot ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'}`}>Available</span>
+                      <span className={`text-xs px-2 py-1 rounded ${selectedSlot === slot ? 'bg-emerald-500 text-white' : 'bg-slate-100 text-slate-600'}`}>{t('available')}</span>
                     )}
                   </Button>
                 ))}
@@ -178,7 +183,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                 disabled={!selectedSlot}
                 onClick={() => setStep(5)}
               >
-                Confirm Details <ChevronRight className="ml-2 w-5 h-5" />
+                {t('confirmDetails')} <ChevronRight className="ml-2 w-5 h-5" />
               </Button>
             </Card>
           </div>
@@ -189,20 +194,20 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
             <div className="w-20 h-20 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-6 shadow-inner">
               <CheckCircle2 className="w-10 h-10 text-emerald-600" />
             </div>
-            <h3 className="text-2xl font-bold text-slate-800 mb-2">Almost Done!</h3>
-            <p className="text-slate-500 mb-8">Please confirm your booking details.</p>
+            <h3 className="text-2xl font-bold text-slate-800 mb-2">{t('almostDone')}</h3>
+            <p className="text-slate-500 mb-8">{t('confirmDesc')}</p>
             
             <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mb-8">
               <div className="flex justify-between items-center border-b pb-2 border-slate-200">
-                <span className="text-slate-500">Centre</span>
+                <span className="text-slate-500">{t('centreLbl')}</span>
                 <span className="font-bold text-slate-800">{centres.find(c => c.id === selectedCentre)?.name}</span>
               </div>
               <div className="flex justify-between items-center border-b pb-2 border-slate-200">
-                <span className="text-slate-500">Date</span>
+                <span className="text-slate-500">{t('dateLbl')}</span>
                 <span className="font-bold text-slate-800">10 September 2026</span>
               </div>
               <div className="flex justify-between items-center pb-2 border-slate-200">
-                <span className="text-slate-500">Time</span>
+                <span className="text-slate-500">{t('timeLbl')}</span>
                 <span className="font-bold text-slate-800">{selectedSlot}</span>
               </div>
             </div>
@@ -211,7 +216,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
               className="w-full h-14 text-lg bg-emerald-600 hover:bg-emerald-700 rounded-xl shadow-md"
               onClick={handleConfirm}
             >
-              Confirm Booking
+              {t('confirmBookingBtn')}
             </Button>
           </Card>
         )}
