@@ -109,10 +109,9 @@ export const useAppStore = create<AppState>()(
 
     initSync: async () => {
       if (typeof window === 'undefined') return;
-      if ((window as any)._syncInitialized) return;
-      (window as any)._syncInitialized = true;
       
       console.log("Initializing Supabase Sync...");
+      await supabase.removeAllChannels();
 
       // Fetch initial data
       const fetchInitialData = async () => {
@@ -151,9 +150,10 @@ export const useAppStore = create<AppState>()(
       await fetchInitialData();
 
       // Realtime Subscriptions
+      const channel = supabase.channel(`public-changes-${Date.now()}`);
+
       const setupSubscription = (table: string, stateKey: keyof AppState) => {
-        supabase.channel(`public:${table}`)
-          .on('postgres_changes', { event: '*', schema: 'public', table: table }, (payload: any) => {
+        channel.on('postgres_changes', { event: '*', schema: 'public', table: table }, (payload: any) => {
             console.log(`Realtime update on ${table}`, payload);
             set((state: any) => {
               const currentList = state[stateKey];
@@ -172,8 +172,7 @@ export const useAppStore = create<AppState>()(
               }
               return state;
             });
-          })
-          .subscribe();
+          });
       };
 
       setupSubscription('farmers', 'farmers');
@@ -182,6 +181,8 @@ export const useAppStore = create<AppState>()(
       setupSubscription('tokens', 'tokens');
       setupSubscription('queue', 'queue');
       setupSubscription('audit_logs', 'auditLogs');
+
+      channel.subscribe();
     },
 
     addFarmer: async (farmerData) => {
@@ -194,7 +195,8 @@ export const useAppStore = create<AppState>()(
     bookSlot: async (bookingData) => {
       const newBooking: Booking = { ...bookingData, id: `b${Date.now()}` };
       set((state: any) => ({ bookings: [...state.bookings, newBooking] })); // Optimistic update
-      await supabase.from('bookings').insert([newBooking]);
+      const { error } = await supabase.from('bookings').insert([newBooking]);
+      if (error) console.error("Error inserting booking:", error);
       return newBooking;
     },
 
@@ -212,7 +214,8 @@ export const useAppStore = create<AppState>()(
         logistics: null as any
       };
       set((state: any) => ({ tokens: [...state.tokens, newToken] })); // Optimistic update
-      await supabase.from('tokens').insert([newToken]);
+      const { error } = await supabase.from('tokens').insert([newToken]);
+      if (error) console.error("Error inserting token:", error);
       return newToken;
     },
 
@@ -320,7 +323,7 @@ export const useAppStore = create<AppState>()(
       });
 
       await supabase.from('queue').update({ status: 'PROCESSING', position: 0, estimatedWaitTime: 0, assignedCounterId: availableCounter.id }).eq('tokenId', qItem.tokenId);
-      await supabase.from('tokens').update({ status: 'PROCESSING', counterId: availableCounter.id }).eq('id', qItem.tokenId);
+      await supabase.from('tokens').update({ status: 'PROCESSING' }).eq('id', qItem.tokenId);
 
       for (let i = nextIdx + 1; i < queue.length; i++) {
         if (queue[i].status === "WAITING") {

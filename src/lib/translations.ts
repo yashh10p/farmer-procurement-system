@@ -51,7 +51,18 @@ export const translations = {
     centreLbl: "Centre",
     dateLbl: "Date",
     timeLbl: "Time",
-    confirmBookingBtn: "Confirm Booking"
+    confirmBookingBtn: "Confirm Booking",
+    paddy: "Paddy",
+    wheat: "Wheat",
+    maize: "Maize",
+    chana: "Chana",
+    mustard: "Mustard",
+    cotton: "Cotton",
+    potato: "Potato",
+    onion: "Onion",
+    c1: "Mandi Centre A (Khed)",
+    c2: "Mandi Centre B (Shirur)",
+    c3: "Mandi Centre C (Baramati)"
   },
   hi: {
     selectLanguage: "आप कौन सी भाषा पसंद करते हैं?",
@@ -103,7 +114,18 @@ export const translations = {
     centreLbl: "केंद्र",
     dateLbl: "तारीख",
     timeLbl: "समय",
-    confirmBookingBtn: "बुकिंग की पुष्टि करें"
+    confirmBookingBtn: "बुकिंग की पुष्टि करें",
+    paddy: "धान",
+    wheat: "गेहूँ",
+    maize: "मक्का",
+    chana: "चना",
+    mustard: "सरसों",
+    cotton: "कपास",
+    potato: "आलू",
+    onion: "प्याज",
+    c1: "मंडी केंद्र ए (खेड़)",
+    c2: "मंडी केंद्र बी (शिरूर)",
+    c3: "मंडी केंद्र सी (बारामती)"
   },
   mr: {
     selectLanguage: "तुम्हाला कोणती भाषा आवडेल?",
@@ -155,7 +177,18 @@ export const translations = {
     centreLbl: "केंद्र",
     dateLbl: "तारीख",
     timeLbl: "वेळ",
-    confirmBookingBtn: "बुकिंग पुष्टी करा"
+    confirmBookingBtn: "बुकिंग पुष्टी करा",
+    paddy: "धान (Paddy)",
+    wheat: "गहू",
+    maize: "मका",
+    chana: "हरभरा",
+    mustard: "मोहरी",
+    cotton: "कापूस",
+    potato: "बटाटा",
+    onion: "कांदा",
+    c1: "मंडी केंद्र ए (खेड)",
+    c2: "मंडी केंद्र बी (शिरूर)",
+    c3: "मंडी केंद्र सी (बारामती)"
   },
   pa: {
     selectLanguage: "ਤੁਸੀਂ ਕਿਹੜੀ ਭਾਸ਼ਾ ਪਸੰਦ ਕਰਦੇ ਹੋ?",
@@ -207,7 +240,18 @@ export const translations = {
     centreLbl: "ਕੇਂਦਰ",
     dateLbl: "ਤਾਰੀਖ",
     timeLbl: "ਸਮਾਂ",
-    confirmBookingBtn: "ਬੁਕਿੰਗ ਪੁਸ਼ਟੀ ਕਰੋ"
+    confirmBookingBtn: "ਬੁਕਿੰਗ ਪੁਸ਼ਟੀ ਕਰੋ",
+    paddy: "ਝੋਨਾ",
+    wheat: "ਕਣਕ",
+    maize: "ਮੱਕੀ",
+    chana: "ਛੋਲੇ",
+    mustard: "ਸਰ੍ਹੋਂ",
+    cotton: "ਕਪਾਹ",
+    potato: "ਆਲੂ",
+    onion: "ਪਿਆਜ਼",
+    c1: "ਮੰਡੀ ਕੇਂਦਰ ਏ (ਖੇੜ)",
+    c2: "ਮੰਡੀ ਕੇਂਦਰ ਬੀ (ਸ਼ਿਰੂਰ)",
+    c3: "ਮੰਡੀ ਕੇਂਦਰ ਸੀ (ਬਾਰਾਮਤੀ)"
   },
   gu: {
     selectLanguage: "તમે કઈ ભાષા પસંદ કરો છો?",
@@ -259,7 +303,18 @@ export const translations = {
     centreLbl: "કેન્દ્ર",
     dateLbl: "તારીખ",
     timeLbl: "સમય",
-    confirmBookingBtn: "બુકિંગ પુષ્ટિ કરો"
+    confirmBookingBtn: "બુકિંગ પુષ્ટિ કરો",
+    paddy: "ડાંગર",
+    wheat: "ઘઉં",
+    maize: "મકાઈ",
+    chana: "ચણા",
+    mustard: "સરસવ",
+    cotton: "કપાસ",
+    potato: "બટાકા",
+    onion: "ડુંગળી",
+    c1: "મંડી કેન્દ્ર એ (ખેડ)",
+    c2: "મંડી કેન્દ્ર બી (શિરૂર)",
+    c3: "મંડી કેન્દ્ર સી (બારામતી)"
   },
   kn: {
     selectLanguage: "ನಿಮ್ಮ ಆಯ್ಕೆಯ ಭಾಷೆ ಯಾವುದು?",
@@ -311,7 +366,18 @@ export const translations = {
     centreLbl: "ಕೇಂದ್ರ",
     dateLbl: "ದಿನಾಂಕ",
     timeLbl: "ಸಮಯ",
-    confirmBookingBtn: "ಬುಕಿಂಗ್ ಖಚಿತಪಡಿಸಿ"
+    confirmBookingBtn: "ಬುಕಿಂಗ್ ಖಚಿತಪಡಿಸಿ",
+    paddy: "ಭತ್ತ",
+    wheat: "ಗೋಧಿ",
+    maize: "ಮೆಕ್ಕೆಜೋಳ",
+    chana: "ಕಡಲೆ",
+    mustard: "ಸಾಸಿವೆ",
+    cotton: "ಹತ್ತಿ",
+    potato: "ಆಲೂಗಡ್ಡೆ",
+    onion: "ಈರುಳ್ಳಿ",
+    c1: "ಮಂಡಿ ಕೇಂದ್ರ ಎ (ಖೇಡ್)",
+    c2: "ಮಂಡಿ ಕೇಂದ್ರ ಬಿ (ಶಿರೂರ್)",
+    c3: "ಮಂಡಿ ಕೇಂದ್ರ ಸಿ (ಬಾರಾಮತಿ)"
   }
 };
 

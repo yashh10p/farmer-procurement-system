@@ -9,9 +9,10 @@ export function PublicDisplayApp() {
   const centreId = "c1"; // Hardcoded to Centre A for demo
 
   // Auto-scroll / rotate effect (optional visual polish for digital signage)
-  const [time, setTime] = useState(new Date());
+  const [time, setTime] = useState<Date | null>(null);
   
   useEffect(() => {
+    setTime(new Date());
     const timer = setInterval(() => setTime(new Date()), 1000);
     return () => clearInterval(timer);
   }, []);
@@ -24,9 +25,10 @@ export function PublicDisplayApp() {
     return booking?.centreId === centreId;
   });
 
-  // Group tokens by status
-  const waitingTokens = todayTokens.filter(t => t.status === "WAITING");
-  const processingTokens = todayTokens.filter(t => t.status === "PROCESSING");
+  // Group by status, using queue for waiting and processing to get assignedCounterId and position
+  const activeQueue = [...store.queue].sort((a, b) => a.position - b.position);
+  const waitingQueueItems = activeQueue.filter(q => q.status === "WAITING");
+  const processingQueueItems = activeQueue.filter(q => q.status === "PROCESSING");
   const qcTokens = todayTokens.filter(t => t.status === "READY_FOR_QC" || t.status === "QUALITY_CHECK");
   const paymentTokens = todayTokens.filter(t => t.status === "PAYMENT_INITIATED" || t.status === "PAYMENT_COMPLETED");
 
@@ -53,7 +55,7 @@ export function PublicDisplayApp() {
             <Volume2 className="w-5 h-5" /> Audio Announcements ON
           </div>
           <div className="text-2xl font-bold tracking-wider text-slate-200">
-            {time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' })}
+            {time ? time.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', second: '2-digit' }) : 'Loading...'}
           </div>
         </div>
       </header>
@@ -74,7 +76,8 @@ export function PublicDisplayApp() {
             </div>
             <div className="flex-1 p-6 grid grid-cols-2 gap-4 auto-rows-fr">
               {centre.counters.filter(c => c.status === "ACTIVE").map(counter => {
-                const activeToken = processingTokens.find(t => t.counterId === counter.id);
+                const activeQueueItem = processingQueueItems.find(q => q.assignedCounterId === counter.id);
+                const activeToken = activeQueueItem ? store.tokens.find(t => t.id === activeQueueItem.tokenId) : null;
                 return (
                   <div key={counter.id} className="bg-slate-950 rounded-xl border border-slate-800 p-6 flex flex-col justify-center items-center relative overflow-hidden">
                     <div className="absolute top-4 left-4 text-slate-400 font-bold uppercase">{counter.name}</div>
@@ -107,18 +110,21 @@ export function PublicDisplayApp() {
               </h2>
             </div>
             <div className="flex-1 p-6 flex flex-wrap gap-4 content-start overflow-hidden relative">
-              {waitingTokens.length === 0 ? (
+              {waitingQueueItems.length === 0 ? (
                 <div className="text-slate-500 font-medium text-lg flex w-full h-full items-center justify-center">No farmers waiting</div>
               ) : (
-                waitingTokens.slice(0, 15).map(token => (
-                  <div key={token.id} className="bg-slate-950 border border-slate-700 px-6 py-3 rounded-lg text-2xl font-bold text-slate-200 shadow-md">
-                    {token.number}
-                  </div>
-                ))
+                waitingQueueItems.slice(0, 15).map(qItem => {
+                  const token = store.tokens.find(t => t.id === qItem.tokenId);
+                  return (
+                    <div key={qItem.tokenId} className="bg-slate-950 border border-slate-700 px-6 py-3 rounded-lg text-2xl font-bold text-slate-200 shadow-md">
+                      {token ? token.number : '...'}
+                    </div>
+                  );
+                })
               )}
-              {waitingTokens.length > 15 && (
+              {waitingQueueItems.length > 15 && (
                 <div className="absolute bottom-4 right-6 text-slate-400 font-bold">
-                  + {waitingTokens.length - 15} more...
+                  + {waitingQueueItems.length - 15} more...
                 </div>
               )}
             </div>

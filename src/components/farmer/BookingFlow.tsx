@@ -67,7 +67,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                   className={`h-16 text-lg rounded-xl ${selectedCrop === crop ? 'bg-emerald-600 hover:bg-emerald-700' : 'border-emerald-200 text-slate-700 hover:bg-emerald-50'}`}
                   onClick={() => setSelectedCrop(crop)}
                 >
-                  {crop}
+                  {t(crop.toLowerCase() as any) || crop}
                 </Button>
               ))}
             </div>
@@ -121,7 +121,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
                   <div className="flex justify-between items-start mb-2">
                     <div className="flex items-center gap-2">
                       <MapPin className="text-emerald-600 w-5 h-5" />
-                      <h4 className="font-bold text-lg text-slate-800">{c.name}</h4>
+                      <h4 className="font-bold text-lg text-slate-800">{t(c.id as any) || c.name}</h4>
                     </div>
                     <Badge variant="outline" className="bg-emerald-100 text-emerald-800 border-emerald-200">
                       {c.distance}
@@ -200,7 +200,7 @@ export function BookingFlow({ onComplete }: BookingFlowProps) {
             <div className="bg-slate-50 rounded-xl p-4 text-left space-y-3 mb-8">
               <div className="flex justify-between items-center border-b pb-2 border-slate-200">
                 <span className="text-slate-500">{t('centreLbl')}</span>
-                <span className="font-bold text-slate-800">{centres.find(c => c.id === selectedCentre)?.name}</span>
+                <span className="font-bold text-slate-800">{t(selectedCentre as any) || centres.find(c => c.id === selectedCentre)?.name}</span>
               </div>
               <div className="flex justify-between items-center border-b pb-2 border-slate-200">
                 <span className="text-slate-500">{t('dateLbl')}</span>

@@ -42,7 +42,10 @@ export function RoleSwitcher() {
             </DropdownMenuItem>
           ))}
           <DropdownMenuSeparator />
-          <DropdownMenuItem onClick={() => window.location.reload()} className="text-destructive font-medium">
+          <DropdownMenuItem onClick={() => {
+            localStorage.removeItem("smart-mandi-storage");
+            window.location.reload();
+          }} className="text-destructive font-medium">
             Reset Demo State
           </DropdownMenuItem>
         </DropdownMenuContent>

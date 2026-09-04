@@ -40,7 +40,7 @@ export function GateGuardApp() {
   const [simulatedTime, setSimulatedTime] = useState<string>("");
 
   // Simple lookup
-  const activeToken = store.tokens.find(t => t.number.includes(tokenId) && tokenId.length > 2);
+  const activeToken = store.tokens.find(t => t.number.toUpperCase().includes(tokenId.toUpperCase()) && tokenId.length > 2);
   const booking = activeToken ? store.bookings.find(b => b.id === activeToken.bookingId) : null;
   const farmer = booking ? store.farmers.find(f => f.id === booking.farmerId) : null;
 
@@ -90,12 +90,14 @@ export function GateGuardApp() {
             <div className="w-48 h-48 border-4 border-dashed border-slate-200 rounded-2xl mx-auto mb-6 flex flex-col items-center justify-center text-slate-400 bg-slate-50 cursor-pointer hover:bg-slate-100 hover:scale-105 transition-all"
                  onClick={() => { 
                    // Mock scanning by finding the latest booked token for demo purposes
-                   const bookedTokens = store.tokens.filter(t => t.status === "BOOKED");
-                   const latestToken = bookedTokens[bookedTokens.length - 1];
-                   if (latestToken && !tokenId) {
+                   const scannableTokens = store.tokens.filter(t => t.status === "BOOKED" || t.status === "WAITING" || t.status === "IN_PROCUREMENT");
+                   const latestToken = scannableTokens[scannableTokens.length - 1];
+                   if (latestToken) {
                      setTokenId(latestToken.number);
+                     setScanned(true); 
+                   } else {
+                     alert("Demo: No active tokens found in the database to scan! Please create a booking in the Farmer App first.");
                    }
-                   setScanned(true); 
                  }}>
               <QrCode className="w-16 h-16 mb-2" />
               <p className="font-bold">Tap to Scan QR</p>

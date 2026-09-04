@@ -18,6 +18,17 @@ export function CentreDashboard() {
   const centre = store.centres[0];
   const queue = store.queue;
 
+  if (!centre) {
+    return (
+      <div className="min-h-screen bg-slate-100 flex items-center justify-center">
+        <div className="animate-pulse flex flex-col items-center">
+          <div className="w-12 h-12 border-4 border-blue-600 border-t-transparent rounded-full animate-spin mb-4"></div>
+          <p className="text-slate-500 font-medium">Loading Operations Command...</p>
+        </div>
+      </div>
+    );
+  }
+
   const activeCountersCount = centre.counters.filter(c => c.status === "ACTIVE").length || 1;
   const totalCountersCount = centre.counters.length;
   const pendingCount = queue.filter(q => q.status === "WAITING").length;
